@@ -34,7 +34,14 @@ class Bird:
         引数1 num：こうかとん画像ファイル名の番号
         引数2 xy：こうかとん画像の位置座標タプル
         """
-        
+        self.img = pg.transform.flip(  # 左右反転
+            pg.transform.rotozoom(  # 2倍に拡大
+                pg.image.load(f"{MAIN_DIR}/fig/{num}.png"), 
+                0, 
+                2.0), 
+            True, 
+            False
+        )
         img0 = pg.transform.rotozoom(pg.image.load(f"{MAIN_DIR}/fig/{num}.png"), 0, 2.0)
         img = pg.transform.flip(img0, True, False)  # デフォルトのこうかとん（右向き）
         self.imgs = {  # 0度から反時計回りに定義
@@ -47,14 +54,6 @@ class Bird:
             (0, +5): pg.transform.rotozoom(img, -90, 1.0),  # 下
             (+5, +5): pg.transform.rotozoom(img, -45, 1.0),  # 右下
         }
-        # self.img = pg.transform.flip(  # 左右反転
-        #     pg.transform.rotozoom(  # 2倍に拡大
-        #         pg.image.load(f"{MAIN_DIR}/fig/{num}.png"), 
-        #         0, 
-        #         2.0), 
-        #     True, 
-        #     False
-        # )
         self.img = self.imgs[(+5, 0)]  # 右向きこうかとんをデフォ画像にする
         self.rct = self.img.get_rect()
         self.rct.center = xy
@@ -166,7 +165,7 @@ def main():
             beam.update(screen)
         pg.display.update()
         tmr += 1
-        clock.tick(50)
+        clock.tick(100)
 if __name__ == "__main__":
     pg.init()
     main()
