@@ -132,10 +132,10 @@ class Bomb:
 
 class Beam:
 
-    def __init__(self, xy: tuple[int, int]):
+    def __init__(self, bird):
         self.img = pg.image.load("ex03/fig/beam.png")
         self.rct = self.img.get_rect()
-        self.rct.center = xy
+        self.rct.center = bird.rct.right
         self.vx, self.vy = +5, 0
         
 
@@ -146,7 +146,12 @@ class Beam:
 class Explosion:
     def __init__(self, xy: tuple[int, int]):
         self.img = pg.transform.flip(pg.image.load("ex03/fig/explosion.gif"), True, False)
-
+        self.rct = self.img.get_rect()
+        self.rct.center = None
+        self.life = pg.time.Clock()
+    def update(self):
+        self.life -= 1
+        
 
 
 def main():
@@ -154,6 +159,9 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
+    beam = Beam((1000,400))
+    beam_rct = bird.rct.midright
+    
     bombs = []
     for i in range(num_of_boms):
         bomb = Bomb()
@@ -165,7 +173,9 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
-        beam = Beam(bird.rct.midright)
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                beam = Beam(bird)
+                beam.update(screen)
         screen.blit(bg_img, [0, 0])
         for b in bombs:
             if bird.rct.colliderect(b.rct):
@@ -175,14 +185,8 @@ def main():
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        bomb.update(screen)
-        if key_lst[pg.K_SPACE]:
-            beam.update(screen)                        
-            for b in bombs:
-                if beam.rct.colliderect(b.rct):
-                    b = None    
-                    beam.update(screen)
-        pg.display.update()
+        bomb.update((screen))
+        beam.update(screen)
         tmr += 1
         clock.tick(50)
 
